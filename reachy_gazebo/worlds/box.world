@@ -38,7 +38,7 @@
 
     <!-- Simple box model -->
     <model name="box_model">
-      <pose>0 3 0.5 0 0 0</pose> <!-- center at z=0.5 so it sits on the ground -->
+      <pose>3 0 0.5 0 0 0</pose> <!-- center at z=0.5 so it sits on the ground -->
       <static>false</static>
       <link name="link">
         <inertial>

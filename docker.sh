@@ -20,6 +20,6 @@ docker run -it --rm --network=host \
     service_dev \
     start_rviz:=true start_sdk_server:=true \
     fake:=true orbbec:=false gazebo:=true \
-    world:='box.world'
+    world:='simple_table.world'
 
-# 
+# world:=
