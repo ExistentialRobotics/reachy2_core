@@ -732,13 +732,13 @@
   </link>
 
   <joint name="depth_cam_l_optical_joint" type="fixed">
-    <origin xyz="0.058 0.025 -0.03" rpy="${radians(-47.5-90.0)} 0.0 ${-pi/2}" />
-    <parent link="torso" />
+    <origin xyz="0.058 0.025 -0.03" rpy="${-pi/2} 0.0 ${-pi/2}" />
+    <parent link="head_tip" />
     <child link="depth_cam_l_optical" />
   </joint>
   <joint name="depth_cam_l_frame_joint" type="fixed">
-    <origin xyz="0.058 0.025 -0.03" rpy="0.0 ${radians(47.5)} 0.0" />
-    <parent link="torso" />
+    <origin xyz="0.058 0.025 -0.03" rpy="0.0 0.0 0.0" />
+    <parent link="head_tip" />
     <child link="depth_cam_l_frame" />
   </joint>
 
@@ -766,18 +766,18 @@
   </link>
 
   <joint name="depth_cam_rgb_optical_joint" type="fixed">
-    <origin xyz="0.058 0.0155 -0.03" rpy="${radians(-47.5-90.0)} 0.0 ${-pi/2}" />
-    <parent link="torso" />
+    <origin xyz="0.058 0.0155 -0.03" rpy="${-pi/2} 0.0 ${-pi/2}" />
+    <parent link="head_tip" />
     <child link="depth_cam_rgb_optical" />
   </joint>
   <joint name="depth_cam_rgb_optical_frame_joint" type="fixed">
-    <origin xyz="0.058 0.0155 -0.03" rpy="${radians(-47.5-90.0)} 0.0 ${-pi/2}" />
-    <parent link="torso" />
+    <origin xyz="0.058 0.0155 -0.03" rpy="${-pi/2} 0.0 ${-pi/2}" />
+    <parent link="head_tip" />
     <child link="depth_cam_rgb_optical_frame" />
   </joint>
   <joint name="depth_cam_rgb_frame_joint" type="fixed">
-    <origin xyz="0.058 0.0155 -0.03" rpy="0.0 ${radians(47.5)} 0.0" />
-    <parent link="torso" />
+    <origin xyz="0.058 0.0155 -0.03" rpy="0.0 0.0 0.0" />
+    <parent link="head_tip" />
     <child link="depth_cam_rgb_frame" />
   </joint>
 
@@ -797,13 +797,13 @@
     </inertial>
   </link>
   <joint name="depth_cam_r_optical_joint" type="fixed">
-    <origin xyz="0.058 -0.025 -0.03" rpy="${radians(-47.5-90.0)} 0.0 ${-pi/2}" />
-    <parent link="torso" />
+    <origin xyz="0.058 -0.025 -0.03" rpy="${-pi/2} 0.0 ${-pi/2}" />
+    <parent link="head_tip" />
     <child link="depth_cam_r_optical" />
   </joint>
   <joint name="depth_cam_r_frame_joint" type="fixed">
-    <origin xyz="0.058 -0.025 -0.03" rpy="0.0 ${radians(47.5)} 0.0 " />
-    <parent link="torso" />
+    <origin xyz="0.058 -0.025 -0.03" rpy="0.0 0.0 0.0 " />
+    <parent link="head_tip" />
     <child link="depth_cam_r_frame" />
   </joint>
 
