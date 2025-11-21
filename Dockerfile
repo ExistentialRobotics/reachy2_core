@@ -48,9 +48,11 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Fix permissions before switching user
+RUN chown -R 1000:1000 /home/reachy/ 2>/dev/null || true
+
 USER reachy
 WORKDIR /home/reachy/reachy_ws/src
 RUN git clone https://github.com/pal-robotics/realsense_gazebo_plugin.git -b humble-devel
 
-USER reachy
 WORKDIR /home/reachy
