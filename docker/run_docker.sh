@@ -1,6 +1,7 @@
 RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
 
 docker run -it --rm --network=host \
+    -u root \
     -e ROS_DOMAIN_ID=42 \
     -e RMW_IMPLEMENTATION=$RMW_IMPLEMENTATION \
     -e ROS_LOCALHOST_ONLY=0 \

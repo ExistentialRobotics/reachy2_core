@@ -53,7 +53,4 @@ RUN git clone https://github.com/pal-robotics/realsense_gazebo_plugin.git -b hum
 
 WORKDIR /home/reachy/reachy_ws
 
-# Build the workspace
-# RUN colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
-
 WORKDIR /home/reachy
