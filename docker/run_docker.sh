@@ -19,9 +19,10 @@ docker run -it --rm --network=host \
     -e XDG_RUNTIME_DIR=/tmp/runtime-root \
     --device /dev/snd \
     --name reachy2 reachy2:latest \
+    service_dev \
     start_rviz:=true start_sdk_server:=true \
     fake:=true orbbec:=false gazebo:=true \
     world:='simple_table.world'
-#service_dev \
+#
 # world:=
 # 
