@@ -14,14 +14,14 @@ docker run -it --rm --network=host \
     -v /dev/drm_dp_aux0:/dev/drm_dp_aux0 \
     -v /dev/dri:/dev/dri \
     -v $(pwd):/home/reachy/reachy_ws/src/reachy2_core \
+    --entrypoint /home/reachy/reachy_ws/src/reachy2_core/launch.sh \
     -v /tmp:/tmp \
     -e XDG_RUNTIME_DIR=/tmp/runtime-root \
     --device /dev/snd \
     --name reachy2 reachy2:latest \
-    service_dev \
     start_rviz:=true start_sdk_server:=true \
     fake:=true orbbec:=false gazebo:=true \
     world:='simple_table.world'
-
+#service_dev \
 # world:=
 # 
