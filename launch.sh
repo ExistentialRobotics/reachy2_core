@@ -32,27 +32,29 @@ print_interface(){
 # Trap SIGTERM and SIGINT (handle Ctrl+C properly)
 trap 'echo "Stopping container..."; exit 0' SIGTERM SIGINT
 
-print_interface &
-# Handle Fake mode toggle
-args=("$@")
-if [ "$REACHY2_CORE_SERVICE_FAKE" = "true" ]; then
-    args+=("fake:=true")
-fi 
+exec /bin/bash
 
-# Check if the first argument is "sleep"
-if [ "$1" = "sleep" ]; then
-    # If the first argument is "sleep", execute sleep infinity
-    sleep infinity
+# print_interface &
+# # Handle Fake mode toggle
+# args=("$@")
+# if [ "$REACHY2_CORE_SERVICE_FAKE" = "true" ]; then
+#     args+=("fake:=true")
+# fi 
 
-elif [ "$1" = "service_dev" ]; then
-    # sb doesnt work well in that kind of non-interactive environment, specifically re source-ing the setup.bash
-    full_build
-    cbuilds 
-    source /home/reachy/reachy_ws/install/setup.bash
-    ros2 launch reachy_bringup reachy.launch.py "${args[@]:1}"
-else
-    exec ros2 launch reachy_bringup reachy.launch.py "${args[@]}"
-fi
+# # Check if the first argument is "sleep"
+# if [ "$1" = "sleep" ]; then
+#     # If the first argument is "sleep", execute sleep infinity
+#     sleep infinity
+
+# elif [ "$1" = "service_dev" ]; then
+#     # sb doesnt work well in that kind of non-interactive environment, specifically re source-ing the setup.bash
+#     full_build
+#     cbuilds 
+#     source /home/reachy/reachy_ws/install/setup.bash
+#     ros2 launch reachy_bringup reachy.launch.py "${args[@]:1}"
+# else
+#     exec ros2 launch reachy_bringup reachy.launch.py "${args[@]}"
+# fi
 
 # aplay /home/reachy/dev/reachy2_sounds/MA_BANT_Bubbles_Pops_2.wav
 #!/bin/bash

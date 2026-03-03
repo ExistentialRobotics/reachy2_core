@@ -9,6 +9,7 @@ RUN apt-get update && \
     apt-get install -y \
     ros-humble-point-cloud-transport \
     ros-humble-image-transport-plugins \
+    ros-humble-moveit* \
     ros-humble-gazebo-ros-pkgs \
     protobuf-compiler \
     libprotobuf-dev && \
