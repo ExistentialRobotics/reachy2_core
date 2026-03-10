@@ -2,6 +2,18 @@
 
 This repository provides the core ROS 2 packages required to simulate, configure, and launch the **Reachy 2** humanoid robot. It includes URDF descriptions, launch files, Gazebo simulation assets, and control interfaces used across real and simulated platforms.
 
+## ERL
+
+Docker container scripts for the reachy2 setup are included in the /docker directory. Run `. docker/build_docker.sh` to build and `. docker/run_docker.sh` to run the docker.
+
+Once inside the docker container, `cd reachy_ws` and build using `colcon build`, then `source install/setup.bash`. 
+
+In order to run the code with table world in gazebo, run
+
+`ros2 launch reachy_bringup reachy.launch.py start_rviz:=true start_sdk_server:=true fake:=true gazebo:=true orbbec:=false world:='simple_table.world'`
+
+In order to run with moveit, add the launch parameters `moveit:=true controllers:=trajectory`
+
 ## Overview
 
 The repo is structured as a multi-package ROS 2 workspace and serves as the foundation for developing and testing Reachy 2 behaviors, whether in hardware or in simulation.
