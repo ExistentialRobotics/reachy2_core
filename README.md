@@ -12,6 +12,9 @@ In order to run the code with table world in gazebo, run
 
 `ros2 launch reachy_bringup reachy.launch.py start_rviz:=true start_sdk_server:=true fake:=true gazebo:=true orbbec:=false world:='simple_table.world'`
 
+`ros2 launch reachy_bringup reachy.launch.py start_rviz:=true start_sdk_server:=false fake:=true gazebo:=true orbbec:=false world:='simple_table.world' moveit:=true controllers:=trajectory`
+
+
 In order to run with moveit, add the launch parameters `moveit:=true controllers:=trajectory`
 
 ## Overview
