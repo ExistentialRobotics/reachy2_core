@@ -706,7 +706,7 @@ def generate_launch_description():
                 "start_rviz",
                 default_value="false",
                 description="Start RViz2 automatically with this launch file.",
-                choices=["true", "false", *get_rviz_conf_choices()],
+                choices=["true", "false"],
             ),
             DeclareLaunchArgument(
                 "foxglove",
