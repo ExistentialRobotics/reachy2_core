@@ -1,0 +1,6 @@
+[submodule "reachy_moveit_config_ros2"]
+	path = reachy_moveit_config_ros2
+	url = https://github.com/ExistentialRobotics/reachy_moveit_config_ros2.git
+[submodule "realsense-ros"]
+	path = realsense-ros
+	url = https://github.com/ExistentialRobotics/realsense-ros.git

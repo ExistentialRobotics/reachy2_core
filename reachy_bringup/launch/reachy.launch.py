@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from launch import LaunchDescription
 from launch.actions import (
@@ -26,6 +27,8 @@ from launch_ros.actions import LifecycleNode, Node, SetUseSimTime
 from launch_ros.descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 from reachy2_sdk_api.reachy_pb2 import ReachyCoreMode
+from ament_index_python.packages import get_package_share_directory
+
 
 from reachy_config import (
     BETA,
@@ -62,6 +65,25 @@ def get_scene_choices():
             scenes.append(scene_name)
     return scenes
 
+def load_file(package_name, file_path):
+    package_path = get_package_share_directory(package_name)
+    absolute_file_path = os.path.join(package_path, file_path)
+
+    try:
+        with open(absolute_file_path, "r") as file:
+            return file.read()
+    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
+        return None
+    
+def load_yaml(package_name, file_path):
+    package_path = get_package_share_directory(package_name)
+    absolute_file_path = os.path.join(package_path, file_path)
+
+    try:
+        with open(absolute_file_path, "r") as file:
+            return yaml.safe_load(file)
+    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
+        return None
 
 def launch_setup(context, *args, **kwargs):
     # perform(context) returns arg as a string, hence the conversion
@@ -84,10 +106,34 @@ def launch_setup(context, *args, **kwargs):
     verbose_logger_log_level_rl = LaunchConfiguration("log")
     mujoco_rl = LaunchConfiguration("mujoco")
     mujoco_py = mujoco_rl.perform(context) == "true"
+    moveit_py = LaunchConfiguration("moveit").perform(context) == "true"
 
     nodes = []
 
     clear_bags_and_logs(nb_runs_to_keep=25)
+
+    robot_description_semantic_config = load_file(
+        "reachy_moveit_config_ros2", "config/reachy2.srdf"
+    )
+    robot_description_semantic = {
+        "robot_description_semantic": robot_description_semantic_config
+    }
+
+    kinematics_yaml = load_yaml(
+        "reachy_moveit_config_ros2", "config/kinematics.yaml"
+    )
+
+    # Planning Functionality
+    ompl_planning_pipeline_config = {
+        "move_group": {
+            "planning_plugin": "ompl_interface/OMPLPlanner",
+            "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/ResolveConstraintFrames default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+            "start_state_max_bounds_error": 0.1,
+        }
+    }
+
+    ompl_planning_yaml = load_yaml("reachy_moveit_config_ros2", "config/ompl_planning.yaml")
+    ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     ####################
     ### Robot config ###
@@ -162,6 +208,9 @@ def launch_setup(context, *args, **kwargs):
             _rviz_filename = "reachy.rviz"
         else:
             _rviz_filename = "reachy_simu.rviz"
+    
+    if moveit_py:
+        _rviz_filename = "moveit.rviz"
 
     rviz_config_file = PathJoinSubstitution(
         [
@@ -331,24 +380,22 @@ def launch_setup(context, *args, **kwargs):
 
     # Used for MoveIt support, to be maintenained
     # # TODO propper refacto of this https://github.com/pollen-robotics/reachy_v2_wip/issues/20
-    # # trajectory_controllers = []
-    # # for traj_controller in [
-    # #     "left_arm_controller",
-    # #     "right_arm_controller",
-    # #     "head_controller",
-    # #     "left_gripper_controller",
-    # #     "right_gripper_controller",
-    # # ]:
-    # #     trajectory_controllers.append(
-    # #         Node(
-    # #             package="controller_manager",
-    # #             executable="spawner",
-    # #             exec_name=traj_controller,
-    # #             arguments=[traj_controller, "-c", "/controller_manager"],
-    # #             output="screen",
-    # #             parameters=[{"use_sim_time": True}],
-    # #         )
-    # #     )
+    trajectory_controllers = []
+    for traj_controller in [
+        "l_arm_controller",
+        "r_arm_controller",
+        "head_controller",
+    ]:
+        trajectory_controllers.append(
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                exec_name=traj_controller,
+                arguments=[traj_controller, "-c", "/controller_manager"],
+                output="screen",
+                parameters=[{"use_sim_time": True}],
+            )
+        )
 
     delay_robot_controller_spawner_after_joint_state_broadcaster_spawner = RegisterEventHandler(
         event_handler=OnProcessExit(
@@ -357,7 +404,7 @@ def launch_setup(context, *args, **kwargs):
                 *generic_controllers,
                 *(position_controllers if controllers_py != "trajectory" else []),
                 *(velocity_controllers if mujoco_py else []),
-                # DO NOT REMOVE, unused for now but, who knows # *(trajectory_controllers if controllers_py == "trajectory" else []),
+                *(trajectory_controllers if controllers_py == "trajectory" else []),
                 kinematics_node,
             ],
         ),
@@ -436,6 +483,12 @@ def launch_setup(context, *args, **kwargs):
                     name="rviz2",
                     output="log",
                     arguments=["-d", rviz_config_file],
+                    parameters=[
+                        robot_description,
+                        robot_description_semantic,
+                        ompl_planning_pipeline_config,
+                        kinematics_yaml,
+                    ],
                     condition=IfCondition(PythonExpression(f"'{start_rviz_py}' != 'false'")),
                 )
             ],
@@ -485,6 +538,56 @@ def launch_setup(context, *args, **kwargs):
         ],
         output="screen",
     )
+    DeclareLaunchArgument("moveit", default_value="false", choices=["true", "false"])
+
+    
+
+    moveit_simple_controllers_yaml = load_yaml(
+        "reachy_moveit_config_ros2", "config/reachy_controllers.yaml"
+    )
+
+    moveit_controllers = {
+        "moveit_simple_controller_manager": moveit_simple_controllers_yaml,
+        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+    }                   
+
+    trajectory_execution = {
+        "moveit_manage_controllers": True,
+        "trajectory_execution.allowed_execution_duration_scaling": 1.2,
+        "trajectory_execution.allowed_goal_duration_margin": 0.5,
+        "trajectory_execution.allowed_start_tolerance": 0.01,
+    }
+
+    planning_scene_monitor_parameters = {
+        "publish_planning_scene": True,
+        "publish_geometry_updates": True,
+        "publish_state_updates": True,
+        "publish_transforms_updates": True,
+    }
+
+    move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        parameters=[
+            robot_description,
+            robot_description_semantic,
+            kinematics_yaml,
+            ompl_planning_pipeline_config,
+            trajectory_execution,
+            moveit_controllers,
+            {"use_sim_time": True},  # critical for Gazebo
+            planning_scene_monitor_parameters,
+        ],
+        condition=IfCondition(PythonExpression(f"{moveit_py}")),
+    )   
+    delay_moveit_after_controllers = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=joint_state_broadcaster_spawner,
+            on_exit=[move_group_node],
+        )
+    )
+    nodes.append(delay_moveit_after_controllers)
 
     nodes.extend(
         [
@@ -609,7 +712,7 @@ def generate_launch_description():
                 "start_rviz",
                 default_value="false",
                 description="Start RViz2 automatically with this launch file.",
-                choices=["true", "false", *get_rviz_conf_choices()],
+                choices=["true", "false"],
             ),
             DeclareLaunchArgument(
                 "foxglove",
@@ -617,6 +720,7 @@ def generate_launch_description():
                 description="Start FoxGlove bridge with this launch file.",
                 choices=["true", "false"],
             ),
+            DeclareLaunchArgument("moveit", default_value="false", choices=["true", "false"]),
             DeclareLaunchArgument(
                 "orbbec",
                 default_value="true",
