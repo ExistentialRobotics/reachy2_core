@@ -187,9 +187,11 @@ def launch_setup(context, *args, **kwargs):
             (
                 f"reachy_{reachy_config.model}_controllers.yaml"
                 if controllers_py == "default" and not mujoco_py
-                else f"reachy_{reachy_config.model}_controllers_mujoco.yaml"
-                if mujoco_py
-                else "ros2_controllers_ultimate_combo_top_moumoute.yaml"
+                else (
+                    f"reachy_{reachy_config.model}_controllers_mujoco.yaml"
+                    if mujoco_py
+                    else "ros2_controllers_ultimate_combo_top_moumoute.yaml"
+                )
             ),
         ]
     )
@@ -421,7 +423,15 @@ def launch_setup(context, *args, **kwargs):
                 emulate_tty=True,
                 arguments=[
                     reachy_config.config["reachy"]["path"],
-                    str(ReachyCoreMode.GAZEBO if gazebo_py else ReachyCoreMode.FAKE if fake_py else ReachyCoreMode.REAL),
+                    str(
+                        ReachyCoreMode.GAZEBO
+                        if gazebo_py
+                        else ReachyCoreMode.MUJOCO
+                        if mujoco_py
+                        else ReachyCoreMode.FAKE
+                        if fake_py
+                        else ReachyCoreMode.REAL
+                    ),
                 ],
                 condition=IfCondition(start_sdk_server_rl),
             )
@@ -433,11 +443,7 @@ def launch_setup(context, *args, **kwargs):
         executable="reachy_grpc_video_sdk_server",
         output="both",
         condition=IfCondition(start_sdk_server_rl),
-        # arguments=[
-        #     *(["--gazebo"] if (gazebo_py or mujoco_py) else []),
-        #     *(["--fake"] if fake_py else []),
-        # ],
-        arguments=[],
+        arguments=["--simulation"] if (gazebo_py or mujoco_py) else [],
     )
 
     orbbec_node = IncludeLaunchDescription(
