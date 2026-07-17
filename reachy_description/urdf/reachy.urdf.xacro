@@ -813,6 +813,23 @@
     <child link="torso_camera_optical" />
   </joint>
 
+  <!-- Root of the Orbbec driver's TF tree on the real robot: the driver hangs its
+       calibrated per-stream frames (torso_camera_depth_frame, torso_camera_color_frame,
+       ... and their *_optical_frame children) under torso_camera_link. -->
+  <link name="torso_camera_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <mass value="0.001" />
+      <inertia ixx="1.0e-6" ixy="1.0e-8" ixz="1.0e-8" iyy="1.0e-6" iyz="1.0e-8" izz="1.0e-6" />
+    </inertial>
+  </link>
+
+  <joint name="torso_camera_link_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="torso_camera" />
+    <child link="torso_camera_link" />
+  </joint>
+
   <xacro:if value="$(arg use_gazebo)">
     <gazebo reference="torso_camera">
       <sensor type="depth" name="torso_camera">
