@@ -446,9 +446,16 @@ def launch_setup(context, *args, **kwargs):
         arguments=["--simulation"] if (gazebo_py or mujoco_py) else [],
     )
 
+    # camera_name prefixes the driver's TF frames (torso_camera_link -> per-stream frames
+    # with factory extrinsics) and its topic namespace. The URDF attaches torso_camera_link
+    # to the torso so the driver's TF tree connects to the robot's.
     orbbec_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([FindPackageShare("orbbec_camera"), "/launch", "/gemini_330_series.launch.py"]),
-        launch_arguments={"depth_width": "1280", "enable_colored_point_cloud": "true"}.items(),
+        launch_arguments={
+            "camera_name": "torso_camera",
+            "depth_width": "1280",
+            "enable_colored_point_cloud": "true",
+        }.items(),
         condition=IfCondition(PythonExpression(f"{orbbec_py} and not {gazebo_py}")),
     )
 
