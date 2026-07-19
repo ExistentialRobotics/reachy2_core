@@ -570,12 +570,15 @@ def launch_setup(context, *args, **kwargs):
         "trajectory_execution.allowed_start_tolerance": 0.01,
     }
 
+
     planning_scene_monitor_parameters = {
+    "planning_scene_monitor": {
         "publish_planning_scene": True,
         "publish_geometry_updates": True,
         "publish_state_updates": True,
         "publish_transforms_updates": True,
-    }
+    	}
+	}
 
     move_group_node = Node(
         package="moveit_ros_move_group",
@@ -594,6 +597,8 @@ def launch_setup(context, *args, **kwargs):
     		{
         "octomap_frame": "base_link",
         "octomap_resolution": 0.05,
+	"occupancy_map_monitor": {"enabled": True,
+                },
     		},
         	],
         condition=IfCondition(PythonExpression(f"{moveit_py}")),
