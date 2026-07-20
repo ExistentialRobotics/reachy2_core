@@ -552,10 +552,8 @@ def launch_setup(context, *args, **kwargs):
     "config/sensors_3d.yaml",
 	)
 
-    sensors_3d_parameters = {
-    "sensors": sensors_3d_yaml["sensors"],
-    "point_cloud_sensor": sensors_3d_yaml["point_cloud_sensor"],
-	}
+
+    sensors_3d_parameters = sensors_3d_yaml
 
 
     moveit_controllers = {
