@@ -546,6 +546,16 @@ def launch_setup(context, *args, **kwargs):
         "reachy_moveit_config_ros2", "config/reachy_controllers.yaml"
     )
 
+
+    sensors_3d_yaml = load_yaml(
+    "reachy_moveit_config_ros2",
+    "config/sensors_3d.yaml",
+	)
+
+
+    sensors_3d_parameters = sensors_3d_yaml
+
+
     moveit_controllers = {
         "moveit_simple_controller_manager": moveit_simple_controllers_yaml,
         "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
@@ -558,12 +568,15 @@ def launch_setup(context, *args, **kwargs):
         "trajectory_execution.allowed_start_tolerance": 0.01,
     }
 
+
     planning_scene_monitor_parameters = {
+    "planning_scene_monitor": {
         "publish_planning_scene": True,
         "publish_geometry_updates": True,
         "publish_state_updates": True,
         "publish_transforms_updates": True,
-    }
+    	}
+	}
 
     move_group_node = Node(
         package="moveit_ros_move_group",
@@ -578,7 +591,14 @@ def launch_setup(context, *args, **kwargs):
             moveit_controllers,
             {"use_sim_time": True},  # critical for Gazebo
             planning_scene_monitor_parameters,
-        ],
+    	    sensors_3d_parameters,
+    		{
+        "octomap_frame": "base_link",
+        "octomap_resolution": 0.05,
+	"occupancy_map_monitor": {"enabled": True,
+                },
+    		},
+        	],
         condition=IfCondition(PythonExpression(f"{moveit_py}")),
     )   
     delay_moveit_after_controllers = RegisterEventHandler(
