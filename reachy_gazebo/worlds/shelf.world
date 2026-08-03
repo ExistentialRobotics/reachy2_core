@@ -1,0 +1,146 @@
+<?xml version="1.0" ?>
+<!--
+  Shelf scene for safe-bubble-cover planning tests.
+
+  A two-shelf unit in front of the robot, with a box on the lower shelf. The
+  compartments are the interesting part: reaching into one requires a path that
+  threads between the shelf boards rather than a straight joint-space
+  interpolation, so a planner that ignores the SDF fails visibly.
+
+  Geometry is placed for Reachy 2 standing at the origin facing +x, with the
+  torso around z = 1.0. The shelf unit is centred at x = 1.05, putting its front
+  face at x = 0.875 - roughly an outstretched arm away, so the robot stands in
+  front of the shelf rather than inside it, and reaching into a compartment is a
+  genuine reach rather than a retraction.
+-->
+<sdf version="1.6">
+  <world name="shelf_scene">
+    <gravity>0 0 -9.8</gravity>
+
+    <!-- Same physics configuration as simple_table.world. Without it Gazebo
+         falls back to default ODE settings, under which Reachy's 34-joint model
+         is unstable: the robot slides away from the origin (hundreds of metres
+         within a couple of minutes), the head camera ends up staring at empty
+         space, and the GP-SDF never sees a single valid depth pixel. -->
+    <physics default="1" name="default_physics" type="dart">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <bullet>
+        <solver>
+          <iters>50</iters>
+          <min_step_size>0.0001</min_step_size>
+          <sor>1.3</sor>
+          <type>quick</type>
+        </solver>
+        <constraints>
+          <contact_surface_layer>0.001</contact_surface_layer>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <split_impulse>1</split_impulse>
+          <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+        </constraints>
+      </bullet>
+      <max_contacts>20</max_contacts>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Named shelf_unit, not shelf: a model must not share its name with the
+         world that contains it, or SDF frame resolution drops the model pose and
+         the links spawn at the world origin - wrapped around the robot. -->
+    <model name="shelf_unit">
+      <static>true</static>
+      <pose>1.05 0 0 0 0 0</pose>
+
+      <!-- Vertical side panels -->
+      <link name="side_left">
+        <pose>0 0.45 0.75 0 0 0</pose>
+        <collision name="c">
+          <geometry><box><size>0.35 0.03 1.5</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.35 0.03 1.5</size></box></geometry>
+          <material><ambient>0.6 0.45 0.3 1</ambient><diffuse>0.6 0.45 0.3 1</diffuse></material>
+        </visual>
+      </link>
+
+      <link name="side_right">
+        <pose>0 -0.45 0.75 0 0 0</pose>
+        <collision name="c">
+          <geometry><box><size>0.35 0.03 1.5</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.35 0.03 1.5</size></box></geometry>
+          <material><ambient>0.6 0.45 0.3 1</ambient><diffuse>0.6 0.45 0.3 1</diffuse></material>
+        </visual>
+      </link>
+
+      <!-- Horizontal boards: the gaps between these are the compartments the
+           planner has to reach into. -->
+      <link name="board_bottom">
+        <pose>0 0 0.60 0 0 0</pose>
+        <collision name="c">
+          <geometry><box><size>0.35 0.93 0.03</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.35 0.93 0.03</size></box></geometry>
+          <material><ambient>0.7 0.55 0.4 1</ambient><diffuse>0.7 0.55 0.4 1</diffuse></material>
+        </visual>
+      </link>
+
+      <link name="board_middle">
+        <pose>0 0 1.00 0 0 0</pose>
+        <collision name="c">
+          <geometry><box><size>0.35 0.93 0.03</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.35 0.93 0.03</size></box></geometry>
+          <material><ambient>0.7 0.55 0.4 1</ambient><diffuse>0.7 0.55 0.4 1</diffuse></material>
+        </visual>
+      </link>
+
+      <link name="board_top">
+        <pose>0 0 1.40 0 0 0</pose>
+        <collision name="c">
+          <geometry><box><size>0.35 0.93 0.03</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.35 0.93 0.03</size></box></geometry>
+          <material><ambient>0.7 0.55 0.4 1</ambient><diffuse>0.7 0.55 0.4 1</diffuse></material>
+        </visual>
+      </link>
+
+      <link name="back_panel">
+        <pose>0.16 0 0.75 0 0 0</pose>
+        <collision name="c">
+          <geometry><box><size>0.03 0.93 1.5</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.03 0.93 1.5</size></box></geometry>
+          <material><ambient>0.5 0.38 0.25 1</ambient><diffuse>0.5 0.38 0.25 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Target object standing on the middle board, in the upper compartment. -->
+    <model name="box_on_shelf">
+      <static>true</static>
+      <pose>1.00 0.15 1.07 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.08 0.08 0.10</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.08 0.08 0.10</size></box></geometry>
+          <material><ambient>0.2 0.4 0.8 1</ambient><diffuse>0.2 0.4 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>
