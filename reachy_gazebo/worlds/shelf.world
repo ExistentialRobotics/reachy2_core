@@ -56,7 +56,11 @@
          the links spawn at the world origin - wrapped around the robot. -->
     <model name="shelf_unit">
       <static>true</static>
-      <pose>1.05 0 0 0 0 0</pose>
+      <!-- 0.65 m out, so the front face sits at x = 0.475 (torso 0.485). The
+           arm's in-limits envelope tops out near torso x = 0.45, so this is
+           what puts the compartment mouths inside it; at 1.05 the shelf was
+           scenery the arm could not touch. Clears the mobile base footprint. -->
+      <pose>0.65 0 0 0 0 0</pose>
 
       <!-- Vertical side panels -->
       <link name="side_left">
@@ -128,10 +132,12 @@
       </link>
     </model>
 
-    <!-- Target object standing on the middle board, in the upper compartment. -->
+    <!-- One target per arm, standing on the middle board: the dual-arm query
+         needs a goal for each side, and a single centred box would put both
+         hands in the same compartment. -->
     <model name="box_on_shelf">
       <static>true</static>
-      <pose>1.00 0.15 1.07 0 0 0</pose>
+      <pose>0.60 0.15 1.07 0 0 0</pose>
       <link name="link">
         <collision name="c">
           <geometry><box><size>0.08 0.08 0.10</size></box></geometry>
@@ -139,6 +145,20 @@
         <visual name="v">
           <geometry><box><size>0.08 0.08 0.10</size></box></geometry>
           <material><ambient>0.2 0.4 0.8 1</ambient><diffuse>0.2 0.4 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="box_on_shelf_right">
+      <static>true</static>
+      <pose>0.60 -0.15 1.07 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.08 0.08 0.10</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.08 0.08 0.10</size></box></geometry>
+          <material><ambient>0.8 0.4 0.2 1</ambient><diffuse>0.8 0.4 0.2 1</diffuse></material>
         </visual>
       </link>
     </model>
