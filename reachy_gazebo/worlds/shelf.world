@@ -135,9 +135,14 @@
     <!-- One target per arm, standing on the middle board: the dual-arm query
          needs a goal for each side, and a single centred box would put both
          hands in the same compartment. -->
+    <!-- The two boxes sit at the FRONT edge of the middle board, 0.24 m apart
+         centre to centre, so the 0.16 m gap between them is inside the arm's
+         reach envelope (which ends near x = 0.58). At the original x = 0.60,
+         y = +-0.15 they were unreachable clutter: every IK attempt to thread
+         between them failed, so they never constrained a plan. -->
     <model name="box_on_shelf">
       <static>true</static>
-      <pose>0.60 0.15 1.07 0 0 0</pose>
+      <pose>0.52 0.12 1.07 0 0 0</pose>
       <link name="link">
         <collision name="c">
           <geometry><box><size>0.08 0.08 0.10</size></box></geometry>
@@ -151,7 +156,7 @@
 
     <model name="box_on_shelf_right">
       <static>true</static>
-      <pose>0.60 -0.15 1.07 0 0 0</pose>
+      <pose>0.52 -0.12 1.07 0 0 0</pose>
       <link name="link">
         <collision name="c">
           <geometry><box><size>0.08 0.08 0.10</size></box></geometry>

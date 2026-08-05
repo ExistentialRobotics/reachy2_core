@@ -1,0 +1,112 @@
+<?xml version="1.0" ?>
+<!-- A narrow passage the right hand must thread, built to be testable.
+
+     Every earlier attempt at clutter failed on geometry rather than planning:
+     shelf.world's boxes sit at x = 0.60, beyond the arm's in-limits envelope
+     (~0.58), so no IK solution ever put the hand between them and the planner
+     was never constrained by them. This world places the obstacle where BOTH
+     limits are satisfied at once:
+
+       * inside the arm's reach          (posts at x = 0.42, goals at x = 0.50)
+       * inside the map's window         (max_distance 1.5 m from the head ToF)
+
+     Two posts 0.24 m apart centre to centre, 0.06 m square, leave a 0.18 m
+     clear gap. The spherized right hand is ~0.13 m across (palm sphere
+     r = 0.064), so threading it leaves ~2.5 cm either side - tight enough that
+     a plan through the gap is a real result and a plan around it is visible as
+     one.
+
+     What it actually found: the hand never gets the chance. The GP-SDF reports
+     at most +0.0535 m of free space at the centre of the gap against a true
+     +0.090, so every goal in the passage is refused as in collision and the
+     planner is never exercised. See "The map's distances are short" in
+     CLAUDE.md and scripts/map_fidelity.py, which this world is the fixture for.
+     Keep the geometry here in step with WORLD in that script.
+-->
+<sdf version="1.6">
+  <world name="narrow_scene">
+    <gravity>0 0 -9.8</gravity>
+
+    <!-- Copied verbatim from simple_table.world / shelf.world, and it must be:
+         a hand-written ODE block here (the obvious thing to write) is not a
+         style difference, it is the documented instability. Reachy's 34-joint
+         model slides away from the origin under default ODE - this world was
+         first run that way and the robot was 900 m from the posts, the ToF
+         staring at empty space, every depth pixel NaN and the GP-SDF empty.
+         Nothing in the logs says so; it looks exactly like a broken sensor. -->
+    <physics default="1" name="default_physics" type="dart">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <bullet>
+        <solver>
+          <iters>50</iters>
+          <min_step_size>0.0001</min_step_size>
+          <sor>1.3</sor>
+          <type>quick</type>
+        </solver>
+        <constraints>
+          <contact_surface_layer>0.001</contact_surface_layer>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <split_impulse>1</split_impulse>
+          <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+        </constraints>
+      </bullet>
+      <max_contacts>20</max_contacts>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Left post (robot's left, +y). -->
+    <model name="post_left">
+      <static>true</static>
+      <pose>0.42 0.12 1.00 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.06 0.06 0.50</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.06 0.06 0.50</size></box></geometry>
+          <material><ambient>0.8 0.3 0.2 1</ambient><diffuse>0.8 0.3 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Right post (robot's right, -y): the r_arm works on this side. -->
+    <model name="post_right">
+      <static>true</static>
+      <pose>0.42 -0.12 1.00 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.06 0.06 0.50</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.06 0.06 0.50</size></box></geometry>
+          <material><ambient>0.8 0.3 0.2 1</ambient><diffuse>0.8 0.3 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- A backing panel just behind the gap, so a goal placed between the posts
+         is genuinely enclosed rather than open on three sides. -->
+    <model name="backing">
+      <static>true</static>
+      <pose>0.60 0.0 1.00 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.04 0.70 0.50</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.04 0.70 0.50</size></box></geometry>
+          <material><ambient>0.3 0.3 0.35 1</ambient><diffuse>0.3 0.3 0.35 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>
