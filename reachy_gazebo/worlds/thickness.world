@@ -1,0 +1,114 @@
+<?xml version="1.0" ?>
+<!-- How thick must an obstacle be before the map knows it has an inside?
+
+     narrow.world showed the planner routing a fingertip 44 mm into a 0.06 m
+     post, because the GP-SDF reports a small POSITIVE distance inside thin
+     geometry - it reconstructs surfaces, and "distance to the nearest surface"
+     is positive everywhere except where the reconstruction itself carries a
+     sign. The open question is how far that extends: 0.06 m is thin, but a
+     shelf panel in shelf.world is 0.03 m and a table top is thinner still, so
+     if the effect scales with thickness then most real furniture is affected
+     and the narrow-passage result is the general case rather than a corner.
+
+     Four slabs at the same range, front faces aligned at x = 0.40 so each is
+     seen from the same distance and incidence, differing only in thickness:
+     0.03, 0.06, 0.12 and 0.25 m. All four sit inside the ToF's horizontal FOV
+     (|y| < 0.26 at this range) and inside the map's 1.5 m window.
+
+     Probe each one's interior with scripts/map_fidelity.py's geometry helpers,
+     or the thickness probe documented in CLAUDE.md.
+
+     Physics copied verbatim from simple_table.world - see the warning in
+     narrow.world about what a hand-written ODE block does here.
+-->
+<sdf version="1.6">
+  <world name="thickness_scene">
+    <gravity>0 0 -9.8</gravity>
+
+    <physics default="1" name="default_physics" type="dart">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <bullet>
+        <solver>
+          <iters>50</iters>
+          <min_step_size>0.0001</min_step_size>
+          <sor>1.3</sor>
+          <type>quick</type>
+        </solver>
+        <constraints>
+          <contact_surface_layer>0.001</contact_surface_layer>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <split_impulse>1</split_impulse>
+          <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+        </constraints>
+      </bullet>
+      <max_contacts>20</max_contacts>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Front faces all at x = 0.40; centre = 0.40 + thickness/2. -->
+    <model name="slab_003">
+      <static>true</static>
+      <pose>0.415 -0.195 1.05 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.03 0.10 0.50</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.03 0.10 0.50</size></box></geometry>
+          <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="slab_006">
+      <static>true</static>
+      <pose>0.430 -0.065 1.05 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.06 0.10 0.50</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.06 0.10 0.50</size></box></geometry>
+          <material><ambient>0.8 0.5 0.2 1</ambient><diffuse>0.8 0.5 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="slab_012">
+      <static>true</static>
+      <pose>0.460 0.065 1.05 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.12 0.10 0.50</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.12 0.10 0.50</size></box></geometry>
+          <material><ambient>0.3 0.7 0.3 1</ambient><diffuse>0.3 0.7 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="slab_025">
+      <static>true</static>
+      <pose>0.525 0.195 1.05 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry><box><size>0.25 0.10 0.50</size></box></geometry>
+        </collision>
+        <visual name="v">
+          <geometry><box><size>0.25 0.10 0.50</size></box></geometry>
+          <material><ambient>0.3 0.4 0.8 1</ambient><diffuse>0.3 0.4 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>
