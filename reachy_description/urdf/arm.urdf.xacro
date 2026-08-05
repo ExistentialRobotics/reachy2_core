@@ -36,7 +36,7 @@
 
     <xacro:property name="arm_offset_yaw" value="0.17453292519943295" /> <!-- 10 degrees -->
     <xacro:property name="arm_offset_roll" value="-0.2617993877991494" /> <!-- -15 degrees -->
-    
+
     <!-- Check if the robot model is 'beta' -->
     <xacro:if value="${robot_model == 'beta'}">
       <xacro:property name="arm_offset_yaw" value="0.2617993877991494" /> <!-- 15 degrees -->
@@ -85,7 +85,7 @@
 
     <xacro:if value="${side == 'left'}">
       <xacro:property name="reflect" value="-1" />
-      <xacro:property name="min_shoulder_roll" value="-0.0" />
+      <xacro:property name="min_shoulder_roll" value="-${pi}" />
       <xacro:property name="max_shoulder_roll" value="${pi}" />
       <xacro:property name="shoulder_axis1_inverted" value="0" />
       <xacro:property name="shoulder_axis2_inverted" value="0" />
@@ -96,7 +96,7 @@
     <xacro:if value="${side == 'right'}">
       <xacro:property name="reflect" value="1" />
       <xacro:property name="min_shoulder_roll" value="-${pi}" />
-      <xacro:property name="max_shoulder_roll" value="0.0" />
+      <xacro:property name="max_shoulder_roll" value="${pi}" />
       <xacro:property name="shoulder_axis1_inverted" value="1" />
       <xacro:property name="shoulder_axis2_inverted" value="0" />
       <xacro:property name="elbow_axis1_inverted" value="1" />
@@ -225,18 +225,18 @@
 
     <!-- <link name="${prefix}_elbow_forearm_link"> -->
     <!--   <visual> -->
-    <!--   	<origin xyz="0 0 0" rpy="0 0 0"/> -->
-    <!--   	<geometry> -->
-    <!-- 	  <mesh filename="package://arm_description/meshes/Orbita2D_forearm.dae" /> -->
-    <!--   	</geometry> -->
+    <!--        <origin xyz="0 0 0" rpy="0 0 0"/> -->
+    <!--        <geometry> -->
+    <!--          <mesh filename="package://arm_description/meshes/Orbita2D_forearm.dae" /> -->
+    <!--        </geometry> -->
 
     <!--   </visual> -->
     <!--   <inertial> -->
-    <!--   	<origin xyz="0.00092892 -0.00254548 0.14021211" rpy="0 0 0"/> -->
-    <!-- 	<mass value="0.90719109"/> -->
-    <!-- 	 <inertia ixx="0.00428278" ixy="-0.00000203" ixz="0.00011755" -->
-    <!-- 		  iyx="-0.00000203" iyy="0.0044585" iyz="-0.00004915" -->
-    <!-- 		  izx="0.00011755" izy="-0.00004915" izz="0.00047615"/> -->
+    <!--        <origin xyz="0.00092892 -0.00254548 0.14021211" rpy="0 0 0"/> -->
+    <!--        <mass value="0.90719109"/> -->
+    <!--         <inertia ixx="0.00428278" ixy="-0.00000203" ixz="0.00011755" -->
+    <!--                  iyx="-0.00000203" iyy="0.0044585" iyz="-0.00004915" -->
+    <!--                  izx="0.00011755" izy="-0.00004915" izz="0.00047615"/> -->
     <!--   </inertial> -->
 
     <!-- </link> -->
