@@ -83,7 +83,7 @@ class AngleLimits:
     @staticmethod
     def representer(dumper, data):
         # When dumping, we represent it as a custom tag !AngleLimits
-        return dumper.represent_mapping("!AngleLimits", {"min": data.min, "max": data.max})
+        return dumper.represent_mapping("!AngleLimits:", {"min": data.min, "max": data.max})
 
     def validate(self):
         if not isinstance(self.min, float) or not (-18000.0 <= self.min <= 18000.0):
@@ -96,25 +96,21 @@ yaml.SafeLoader.add_constructor("!AngleLimits:", AngleLimits.constructor)
 yaml.SafeDumper.add_representer(AngleLimits, AngleLimits.representer)
 
 
-# PouleEthercat
-class PoulpeEthercat:
-    def __init__(self, port_name, id):
-        self.port_name = port_name
-        self.id = id
+# PoulpeEthercat
+class PoulpeEthercat(dict):
+    """Dict subclass so downstream code accesses fields normally while preserving the YAML tag on dump."""
 
     def __repr__(self):
-        return f"PoulpeEthercat(port_name={self.port_name}, id={self.id})"
-
-    def __eq__(self, other):
-        return self.port_name == other.port_name and self.id == other.id
+        return f"PoulpeEthercat({dict.__repr__(self)})"
 
     @staticmethod
     def constructor(loader, node):
-        return loader.construct_mapping(node)
+        value = loader.construct_mapping(node)
+        return PoulpeEthercat(value)
 
     @staticmethod
     def representer(dumper, data):
-        return dumper.represent_mapping("!PoulpeEthercat", {"port_name": data.port_name, "id": data.id})
+        return dumper.represent_mapping("!PoulpeEthercat", dict(data))
 
 
 yaml.SafeLoader.add_constructor("!PoulpeEthercat", PoulpeEthercat.constructor)
@@ -206,6 +202,44 @@ yaml.SafeDumper.add_representer(XL330, xl330_representer)
 yaml.SafeDumper.add_representer(XM, xm_representer)
 
 
+# FakeMotors
+class FakeMotors(dict):
+    """Dict subclass preserving the !FakeMotors tag on dump."""
+
+    @staticmethod
+    def constructor(loader, node):
+        value = loader.construct_mapping(node, deep=True)
+        return FakeMotors(value)
+
+    @staticmethod
+    def representer(dumper, data):
+        return dumper.represent_mapping("!FakeMotors", dict(data))
+
+
+yaml.SafeLoader.add_constructor("!FakeMotors", FakeMotors.constructor)
+yaml.SafeDumper.add_representer(FakeMotors, FakeMotors.representer)
+
+
+class ZeroStartup:
+    def __repr__(self):
+        return "ZeroStartup()"
+
+    def __eq__(self, other):
+        return isinstance(other, ZeroStartup)
+
+
+def zero_startup_constructor(loader, node):
+    return ZeroStartup()
+
+
+def zero_startup_representer(dumper, data):
+    return dumper.represent_scalar("!ZeroStartup", "")
+
+
+yaml.SafeLoader.add_constructor("!ZeroStartup", zero_startup_constructor)
+yaml.SafeDumper.add_representer(ZeroStartup, zero_startup_representer)
+
+
 # Poulpe
 class Poulpe:
     def __init__(self, id, orbita_type, name):
@@ -261,16 +295,14 @@ def load_yaml(file_path):
 
 
 def dump_yaml(file_path, data):
-    # print("\nData:")
-    # print(data)
-    # output_yaml = yaml.dump(data, Dumper=yaml.SafeDumper, default_flow_style=False)
-    # print("\nDumped YAML:")
-    # print(output_yaml)
-    # exit(1)
+    output = yaml.dump(data, Dumper=yaml.SafeDumper, default_flow_style=False, sort_keys=False)
+    # Remove trailing empty-string quotes added by PyYAML for scalar custom tags
+    output = output.replace("!FirmwareZero ''", "!FirmwareZero")
+    output = output.replace("!XL330 ''", "!XL330")
+    output = output.replace("!XM ''", "!XM")
 
     if file_path is None:
-        print(yaml.dump(data, Dumper=yaml.SafeDumper, default_flow_style=False))
+        print(output)
     else:
         with open(file_path, "w") as f:
-            # yaml.dump(data, f)
-            yaml.dump(data, f, Dumper=yaml.SafeDumper, default_flow_style=False)
+            f.write(output)
