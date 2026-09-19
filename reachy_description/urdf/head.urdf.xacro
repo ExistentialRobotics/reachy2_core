@@ -495,17 +495,10 @@
       </gazebo>
 
 
-      <!-- Head ToF depth camera (Luxonis ToF 33D on the real robot).
-           Publishes into the same /teleop_camera/depth/... namespace and the
-           same tof_camera_optical frame as the physical robot, so the GP-SDF
-           config is identical between sim, bag playback and hardware.
-
-           horizontal_fov 1.2207509 rad is chosen so gazebo's derived intrinsics
-           match the real ToF: fx = (width/2)/tan(hfov/2) = 320/tan(0.6103755)
-           = 457.0 px, and with square pixels fy = 457.0, cx = 320, cy = 240.
-           (The bag's recorded camera_info reports fy = 376.7, which is a known
-           placeholder — see kernel_sdf_keti/config/reachy/README.md.)
-           Range 0.1-6 m matches depth_frame.yaml's valid_range. -->
+      <!-- Head ToF stream compatibility ported from ERL 01b329a.
+           Intrinsics, noise and range are simulation approximations, not verified
+           calibration of this robot. Compare raw/rectified CameraInfo before use.
+           hfov=1.2207509 at 640x480 gives fx=fy=457.484 px (square pixels). -->
       <xacro:if value="$(arg depth_camera)">
         <gazebo reference="tof_camera">
           <sensor type="depth" name="tof_camera">

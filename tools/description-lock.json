@@ -1,0 +1,34 @@
+{
+  "upstream": "b7000c1255f322826f4d0ad1f1e54d424e55c051",
+  "erl_base": "c73a72f7820cb7ef1053c795d3f3114e7032ef61",
+  "repositories": {
+    "orbita2d_control": {
+      "url": "https://github.com/pollen-robotics/orbita2d_control.git",
+      "commit": "dc54f7ee24b54407d584ebee15bdb35894c206d0"
+    },
+    "orbita3d_control": {
+      "url": "https://github.com/pollen-robotics/orbita3d_control.git",
+      "commit": "9e547d616af8487c52c5aff68792a74fbc023d79"
+    },
+    "ros2_pollen_toolbox": {
+      "url": "https://github.com/pollen-robotics/ros2_pollen_toolbox.git",
+      "commit": "ee9596683b2acf31d99e282774bf783813f0399c"
+    },
+    "xacro": {
+      "url": "https://github.com/ros/xacro.git",
+      "commit": "390772abfe1e068f54aed674ce43873229a7db4e"
+    },
+    "mobile_base": {
+      "url": "https://github.com/pollen-robotics/mobile_base.git",
+      "commit": "0efd1e068a7d85de15da18cf1a5b968a63ba7e5b"
+    }
+  },
+  "arguments": {
+    "robot_model": "dvt",
+    "robot_config": "full_kit",
+    "use_fake_hardware": "true",
+    "use_gazebo": "false",
+    "use_mujoco": "false",
+    "depth_camera": "true"
+  }
+}
