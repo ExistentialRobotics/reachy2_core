@@ -760,7 +760,7 @@
     <parent link="neck_base_link"/>
     <child link="neck_dummy_link1"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000.0" lower="-0.35" upper="0.35" velocity="100.0"/>
+    <limit effort="1000.0" lower="-0.70" upper="0.70" velocity="100.0"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
   <joint name="neck_pitch" type="revolute">
@@ -768,7 +768,7 @@
     <parent link="neck_dummy_link1"/>
     <child link="neck_dummy_link2"/>
     <axis xyz="0 1 0"/>
-    <limit effort="1000.0" lower="-0.35" upper="0.35" velocity="100.0"/>
+    <limit effort="1000.0" lower="-0.70" upper="0.70" velocity="100.0"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
   <joint name="neck_yaw" type="revolute">
@@ -1383,7 +1383,7 @@
     <child link="r_shoulder_ball_link"/>
     <axis xyz="1 0 0"/>
     <!-- <axis xyz="1 0 0"/> -->
-    <limit effort="1000.0" lower="-3.141592653589793" upper="0.0" velocity="100.0"/>
+    <limit effort="1000.0" lower="-3.141592653589793" upper="0.51" velocity="100.0"/>
     <safety_controller k_position="500" k_velocity="500" soft_lower_limit="-3.1415" soft_upper_limit="3.1415"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
@@ -1873,7 +1873,7 @@
     <parent link="r_wrist_base_link"/>
     <child link="r_wrist_dummy_link1"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000.0" lower="-0.35" upper="0.35" velocity="100.0"/>
+    <limit effort="1000.0" lower="-0.70" upper="0.70" velocity="100.0"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
   <joint name="r_wrist_pitch" type="revolute">
@@ -1881,7 +1881,7 @@
     <parent link="r_wrist_dummy_link1"/>
     <child link="r_wrist_dummy_link2"/>
     <axis xyz="0 1 0"/>
-    <limit effort="1000.0" lower="-0.35" upper="0.35" velocity="100.0"/>
+    <limit effort="1000.0" lower="-0.70" upper="0.70" velocity="100.0"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
   <joint name="r_wrist_yaw" type="revolute">
@@ -2437,7 +2437,7 @@
     <child link="l_shoulder_ball_link"/>
     <axis xyz="1 0 0"/>
     <!-- <axis xyz="1 0 0"/> -->
-    <limit effort="1000.0" lower="-0.0" upper="3.141592653589793" velocity="100.0"/>
+    <limit effort="1000.0" lower="-0.51" upper="3.141592653589793" velocity="100.0"/>
     <safety_controller k_position="500" k_velocity="500" soft_lower_limit="-3.1415" soft_upper_limit="3.1415"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
@@ -2927,7 +2927,7 @@
     <parent link="l_wrist_base_link"/>
     <child link="l_wrist_dummy_link1"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000.0" lower="-0.35" upper="0.35" velocity="100.0"/>
+    <limit effort="1000.0" lower="-0.70" upper="0.70" velocity="100.0"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
   <joint name="l_wrist_pitch" type="revolute">
@@ -2935,7 +2935,7 @@
     <parent link="l_wrist_dummy_link1"/>
     <child link="l_wrist_dummy_link2"/>
     <axis xyz="0 1 0"/>
-    <limit effort="1000.0" lower="-0.35" upper="0.35" velocity="100.0"/>
+    <limit effort="1000.0" lower="-0.70" upper="0.70" velocity="100.0"/>
     <dynamics damping="0.01" friction="0.1"/>
   </joint>
   <joint name="l_wrist_yaw" type="revolute">
